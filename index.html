@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play & Earn - Telegram Mini App</title>
+    <!-- የAdsgram ማስታወቂያ ስክሪፕት -->
+   <script src="https://onclicka.com/act/v2.js" async></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .app-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        p {
+            font-size: 14px;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+        }
+        .balance-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .balance-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffb74d;
+        }
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #4caf50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        .btn-watch {
+            background: linear-gradient(90deg, #4caf50, #81c784);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-watch:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        }
+        .footer-note {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #b0bec5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <h1>ይጫወቱ እና ይስሩ!</h1>
+        <p>ማስታወቂያዎችን በመመልከት እውነተኛ ዶላር ያከማቹ</p>
+
+        <!-- የባላንስ ማሳያ ሳጥን -->
+        <div class="balance-card">
+            <div class="balance-label">የእርስዎ አጠቃላይ ገቢ</div>
+            <div class="balance-amount">$<span id="user-balance">0.00</span></div>
+        </div>
+
+        <!-- ማስታወቂያ የሚያስጀምረው ቁልፍ -->
+        <button class="btn-watch" id="watch-ad-btn">🎬 ማስታወቂያ እይ</button>
+
+        <div class="footer-note">
+            የ Adsgram ማስታወቂያ ኔትወርክ አጋር
+        </div>
+    </div>
+
+   <script>
+    // የቴሌግራም Mini Appን ማዘጋጀት
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    // የሳንቲም መጠን መቆጣጠሪያ (በ HTMLህ ውስጥ ባለው id መሰረት)
+    let userCoins = 0.00;
+    const balanceAmountDisplay = document.getElementById('user-balance');
+    const watchAdBtn = document.getElementById('watch-ad-btn');
+
+    // ቁልፉ (Button) ሲነካ ማስታወቂያውን መክፈት
+    watchAdBtn.addEventListener('click', () => {
+        // ማስታወቂያው እስኪመጣ ቁልፉን መጫን እንዳይቻል ማድረግ
+        watchAdBtn.disabled = true;
+        watchAdBtn.innerText = "⏳ ማስታወቂያ እየመጣ ነው...";
+
+        // የ OnClickA ማስታወቂያን በ Zone ID መቀስቀስ
+        if (window.OnClickA && typeof window.OnClickA.showRewarded === 'function') {
+            
+            window.OnClickA.showRewarded({
+                zoneId: '444072', // የአንተ OnClickA Zone ID ቁጥር እዚህ ገብቷል!
+                
+                onOpen: () => {
+                    console.log("Ad opened.");
+                },
+                
+                // ተጠቃሚው ቪዲዮውን ጨርሶ ሲያይ የውሸት ሳንቲም የሚጨምረው እዚህ ነው
+                onReward: () => {
+                    userCoins += 100.00; // 100 ሳንቲም ይጨምራል
+                    balanceAmountDisplay.innerText = userCoins.toFixed(2); // ስክሪኑ ላይ ያሳያል
+                    
+                    tg.showAlert("🎉 እንኳን ደስ አለህ! 100 የጨዋታ ሳንቲም አግኝተሃል።");
+                },
+                
+                onClose: () => {
+                    // ማስታወቂያው ሲዘጋ ቁልፉን መደበኛ ማድረግ
+                    watchAdBtn.disabled = false;
+                    watchAdBtn.innerText = "🎬 ማስታወቂያ እይ";
+                },
+                
+                onError: (err) => {
+                    console.error("Ad failed: ", err);
+                    tg.showAlert("በአሁኑ ሰዓት ማስታወቂያ የለም፣ እባክህ ቆይተህ ሞክር።");
+                    watchAdBtn.disabled = false;
+                    watchAdBtn.innerText = "🎬 ማስታወቂያ እይ";
+                }
+            });
+
+        } else {
+            // OnClickA ገና ካልጫነ በራሱ ሳንቲም እንዲጨምር መፈተኛ (Sandbox Mode)
+            setTimeout(() => {
+                userCoins += 100.00;
+                balanceAmountDisplay.innerText = userCoins.toFixed(2);
+                tg.showAlert("🤖 የሙከራ ሁነታ፦ 100 ሳንቲም ተጨምሯል።");
+                watchAdBtn.disabled = false;
+                watchAdBtn.innerText = "🎬 ማስታወቂያ እይ";
+            }, 1500);
+        }
+    });
+</script>
+
+</body>
+</html>
